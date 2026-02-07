@@ -10,6 +10,33 @@ import Observation
 
 @Observable
 class Order: Codable {
+
+    private struct PersistedAddress: Codable {
+        var name: String
+        var streetAddress: String
+        var city: String
+        var zip: String
+    }
+
+    private func persistAddress() {
+        let payload = PersistedAddress(name: name, streetAddress: streetAddress, city: city, zip: zip)
+        if let data = try? JSONEncoder().encode(payload) {
+            UserDefaults.standard.set(data, forKey: "order")
+        }
+    }
+
+    convenience init(loadFromDefaults: Bool) {
+        self.init()
+        guard loadFromDefaults,
+              let data = UserDefaults.standard.data(forKey: "order"),
+              let saved = try? JSONDecoder().decode(PersistedAddress.self, from: data) else { return }
+
+        self.name = saved.name
+        self.streetAddress = saved.streetAddress
+        self.city = saved.city
+        self.zip = saved.zip
+    }
+
     enum CodingKeys: String, CodingKey {
         case _type = "type"
         case _quantity = "quantity"
@@ -39,13 +66,22 @@ class Order: Codable {
     var extraFrostingEnabled = false
     var addSprinklesEnabled = false
 
-    var name = ""
-    var streetAddress = ""
-    var city = ""
-    var zip = ""
+    var name = "" {
+        didSet { persistAddress() }
+    }
+    var streetAddress = "" {
+        didSet { persistAddress() }
+    }
+    var city = "" {
+        didSet { persistAddress() }
+    }
+    var zip = "" {
+        didSet { persistAddress() }
+    }
 
     var hasValidAddress: Bool {
-        if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
+        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || streetAddress.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            || city.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || zip.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return false
         }
 
@@ -68,3 +104,4 @@ class Order: Codable {
         return cost
     }
 }
+

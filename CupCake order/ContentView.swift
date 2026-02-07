@@ -33,7 +33,7 @@ struct ContentView: View {
                 }
             }
             
-            NavigationLink("Delivery details", destination: AddressView(order: order))
+            NavigationLink("Delivery details", destination: AddressView())
             
             .navigationTitle("Cupcake order")
             .navigationBarTitleDisplayMode(.inline)

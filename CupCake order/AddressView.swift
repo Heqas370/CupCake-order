@@ -12,6 +12,10 @@ struct AddressView: View {
     
     @Bindable var order: Order
     
+    init() {
+        self.order = Order(loadFromDefaults: true)
+    }
+        
     var body: some View {
         Form{
             Section{
@@ -30,5 +34,5 @@ struct AddressView: View {
 }
 
 #Preview {
-    AddressView(order: Order())
+    AddressView()
 }

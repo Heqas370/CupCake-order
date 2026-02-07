@@ -13,6 +13,7 @@ struct CheckoutView: View {
     var order: Order
     @State private var confirmationMessage = ""
     @State private var showingConfirmation = false
+    @State private var showingError = false
     
     var body: some View {
         VStack{
@@ -36,6 +37,9 @@ struct CheckoutView: View {
                 }.padding(.top, 30)
                     .alert("Thank you", isPresented: $showingConfirmation){} message:{
                         Text(confirmationMessage)
+                    }
+                    .alert("Unable to send order", isPresented: $showingError){} message: {
+                        Text("No internet connection!")
                     }
             }
             .scrollBounceBehavior(.basedOnSize)
@@ -63,6 +67,7 @@ struct CheckoutView: View {
         }
         catch{
             print("Checkout failed: \(error.localizedDescription)")
+            showingError = true
         }
     }
 }
